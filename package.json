@@ -1,0 +1,26 @@
+{
+  "name": "smb-crm",
+  "version": "0.1.0",
+  "description": "A CRM for freelancers, SMBs, and non-profits on Cloudflare",
+  "private": true,
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "npm run dev --workspace=packages/workers & npm run dev --workspace=packages/frontend",
+    "build": "npm run build --workspaces --if-present",
+    "type-check": "npm run type-check --workspaces --if-present",
+    "lint": "npm run lint --workspaces --if-present",
+    "db:init": "cd database && wrangler d1 create smb-crm-db",
+    "db:migrate": "cd database && wrangler d1 migrations apply smb-crm-db",
+    "db:backup": "cd database && wrangler d1 backup smb-crm-db"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.3.3",
+    "prettier": "^3.1.1",
+    "eslint": "^8.55.0"
+  }
+}

@@ -1,0 +1,27 @@
+node_modules/
+dist/
+build/
+.wrangler/
+.env.local
+.env.*.local
+*.log
+.DS_Store
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.turbo/
+.next/
+out/
+
+# Cloudflare
+*.wrangler
+worker-configuration.json
+
+# Testing
+coverage/
+.nyc_output/
+
+# OS
+Thumbs.db

@@ -1,0 +1,56 @@
+name = "smb-crm-api"
+type = "javascript"
+account_id = "YOUR_CLOUDFLARE_ACCOUNT_ID"
+workers_dev = true
+route = ""
+zone_id = ""
+
+[env.production]
+name = "smb-crm-api-production"
+route = "api.yourdomain.com/*"
+zone_id = "YOUR_ZONE_ID"
+
+[env.staging]
+name = "smb-crm-api-staging"
+route = "api-staging.yourdomain.com/*"
+zone_id = "YOUR_ZONE_ID"
+
+[build]
+command = "npm run build"
+cwd = "./packages/workers"
+main = "src/index.ts"
+
+[build.upload]
+format = "modules"
+main = "./dist/index.js"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "smb-crm-db"
+database_id = "YOUR_DATABASE_ID"
+
+[[r2_buckets]]
+binding = "BUCKET"
+bucket_name = "smb-crm-storage"
+
+[env.production.d1_databases]
+[[env.production.d1_databases]]
+binding = "DB"
+database_name = "smb-crm-db-production"
+database_id = "YOUR_PROD_DATABASE_ID"
+
+[env.production.r2_buckets]
+[[env.production.r2_buckets]]
+binding = "BUCKET"
+bucket_name = "smb-crm-storage-production"
+
+[vars]
+ENVIRONMENT = "development"
+LOG_LEVEL = "info"
+
+[env.production.vars]
+ENVIRONMENT = "production"
+LOG_LEVEL = "warn"
+
+[triggers]
+crons = ["0 0 * * *"]

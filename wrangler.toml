@@ -1,0 +1,19 @@
+name = "smb-crm"
+account_id = "e528c886015cce349076fb7db222a88"
+pages_build_output_dir = "dist"
+compatibility_date = "2024-03-04"
+compatibility_flags = ["nodejs_compat"]
+
+[env.production]
+name = "smb-crm-production"
+routes = [
+  { pattern = "50801.qzz.io", zone_name = "50801.qzz.io" },
+  { pattern = "www.50801.qzz.io", zone_name = "50801.qzz.io" }
+]
+
+[build.commands]
+command = "npm run build --workspace=packages/frontend"
+
+[build.watch_paths]
+- "packages/frontend/src/**/*.ts"
+- "packages/frontend/src/**/*.tsx"

@@ -1,0 +1,26 @@
+{
+  "name": "smb-crm-workers",
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler dev",
+    "build": "tsc && wrangler deploy --dry-run",
+    "type-check": "tsc --noEmit",
+    "lint": "eslint src --ext ts",
+    "deploy": "wrangler deploy"
+  },
+  "dependencies": {
+    "hono": "^3.12.8",
+    "jsonwebtoken": "^9.1.2",
+    "argon2": "^0.31.2"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20231218.0",
+    "@types/node": "^20.10.6",
+    "typescript": "^5.3.3",
+    "wrangler": "^3.29.2",
+    "eslint": "^8.55.0",
+    "@typescript-eslint/eslint-plugin": "^6.16.0",
+    "@typescript-eslint/parser": "^6.16.0"
+  }
+}
