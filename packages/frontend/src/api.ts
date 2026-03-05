@@ -1,3 +1,5 @@
+/// <reference types="vite/client" />
+
 // API client for SMB CRM
 const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:8789';
 
@@ -66,9 +68,9 @@ class APIClient {
     const url = `${API_BASE}${endpoint}`;
     const token = this.getToken();
 
-    const headers: HeadersInit = {
+    const headers: Record<string, string> = {
       'Content-Type': 'application/json',
-      ...options.headers,
+      ...(options.headers as Record<string, string>),
     };
 
     if (token) {

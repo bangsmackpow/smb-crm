@@ -1,12 +1,11 @@
 import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import { api, Contact, Communication } from '../api';
+import { api, Contact, Communication } from '../api.ts';
 
 export function ContactDetailPage() {
   const { id } = useParams<{ id: string }>();
   const [contact, setContact] = useState<Contact | null>(null);
   const [communications, setCommunications] = useState<Communication[]>([]);
-  const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [showCommunicationForm, setShowCommunicationForm] = useState(false);
 
@@ -41,14 +40,6 @@ export function ContactDetailPage() {
     }
     setShowCommunicationForm(false);
   };
-
-  if (loading && !contact) {
-    return (
-      <div className="flex justify-center items-center h-64">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-      </div>
-    );
-  }
 
   if (error || !contact) {
     return (
