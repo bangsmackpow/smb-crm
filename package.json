@@ -10,7 +10,6 @@
     "dev": "npm run dev --workspace=packages/workers & npm run dev --workspace=packages/frontend",
     "build": "npm run build --workspaces --if-present",
     "type-check": "npm run type-check --workspaces --if-present",
-    "lint": "npm run lint --workspaces --if-present",
     "db:init": "cd database && wrangler d1 create smb-crm-db",
     "db:migrate": "cd database && wrangler d1 migrations apply smb-crm-db",
     "db:backup": "cd database && wrangler d1 backup smb-crm-db"
