@@ -1,60 +1,68 @@
-import jwt from 'jsonwebtoken';
-import { hash, verify } from 'argon2';
+import { SignJWT, jwtVerify } from 'jose';
+// import { hash, verify } from 'argon2'; // Temporarily disabled for Cloudflare Workers compatibility
 
 export interface JWTPayload {
   userId: string;
   tenantId: string;
   email: string;
   role: string;
+  type?: string;
   iat?: number;
   exp?: number;
 }
 
-const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-production';
-const JWT_EXPIRY = parseInt(process.env.JWT_EXPIRY || '86400', 10); // 24 hours default
-const JWT_REFRESH_EXPIRY = parseInt(process.env.JWT_REFRESH_EXPIRY || '604800', 10); // 7 days
+const JWT_SECRET = 'your-secret-key-change-in-production'; // Will be overridden by env
+const JWT_EXPIRY = 86400; // 24 hours default
+const JWT_REFRESH_EXPIRY = 604800; // 7 days
+
+// Helper function to get env value
+function getEnvValue(env: any, key: string, defaultValue: string): string {
+  return env[key] || defaultValue;
+}
 
 /**
  * Generate JWT access token
  */
-export function generateAccessToken(payload: Omit<JWTPayload, 'iat' | 'exp'>): string {
-  return jwt.sign(
-    {
-      ...payload,
-      iat: Math.floor(Date.now() / 1000),
-    },
-    JWT_SECRET,
-    {
-      expiresIn: JWT_EXPIRY,
-    }
-  );
+export async function generateAccessToken(payload: Omit<JWTPayload, 'iat' | 'exp'>, env?: any): Promise<string> {
+  const secretKey = getEnvValue(env, 'JWT_SECRET', JWT_SECRET);
+  const secret = new TextEncoder().encode(secretKey);
+  const expiry = parseInt(getEnvValue(env, 'JWT_EXPIRY', JWT_EXPIRY.toString()), 10);
+  
+  return await new SignJWT(payload)
+    .setProtectedHeader({ alg: 'HS256' })
+    .setIssuedAt()
+    .setExpirationTime(Math.floor(Date.now() / 1000) + expiry)
+    .sign(secret);
 }
 
 /**
  * Generate JWT refresh token (longer expiry)
  */
-export function generateRefreshToken(userId: string, tenantId: string): string {
-  return jwt.sign(
-    {
-      userId,
-      tenantId,
-      type: 'refresh',
-      iat: Math.floor(Date.now() / 1000),
-    },
-    JWT_SECRET,
-    {
-      expiresIn: JWT_REFRESH_EXPIRY,
-    }
-  );
+export async function generateRefreshToken(userId: string, tenantId: string, env?: any): Promise<string> {
+  const secretKey = getEnvValue(env, 'JWT_SECRET', JWT_SECRET);
+  const secret = new TextEncoder().encode(secretKey);
+  const refreshExpiry = parseInt(getEnvValue(env, 'JWT_REFRESH_EXPIRY', JWT_REFRESH_EXPIRY.toString()), 10);
+  
+  return await new SignJWT({
+    userId,
+    tenantId,
+    type: 'refresh',
+  })
+    .setProtectedHeader({ alg: 'HS256' })
+    .setIssuedAt()
+    .setExpirationTime(Math.floor(Date.now() / 1000) + refreshExpiry)
+    .sign(secret);
 }
 
 /**
  * Verify and decode JWT token
  */
-export function verifyToken(token: string): JWTPayload | null {
+export async function verifyToken(token: string, env?: any): Promise<JWTPayload | null> {
   try {
-    const decoded = jwt.verify(token, JWT_SECRET) as JWTPayload;
-    return decoded;
+    const secretKey = getEnvValue(env, 'JWT_SECRET', JWT_SECRET);
+    const secret = new TextEncoder().encode(secretKey);
+    const { payload } = await jwtVerify(token, secret);
+    return payload as unknown as JWTPayload;
   } catch (error) {
     console.error('[JWT Error]', error);
     return null;
@@ -64,7 +72,7 @@ export function verifyToken(token: string): JWTPayload | null {
 /**
  * Extract token from Authorization header
  */
-export function extractToken(authHeader: string | null): string | null {
+export function extractToken(authHeader: string | null | undefined): string | null {
   if (!authHeader) return null;
   
   const parts = authHeader.split(' ');
@@ -76,35 +84,25 @@ export function extractToken(authHeader: string | null): string | null {
 }
 
 /**
- * Hash password with argon2
+ * Hash password using Web Crypto API (placeholder - replace with proper implementation)
  */
 export async function hashPassword(password: string): Promise<string> {
-  try {
-    return await hash(password, {
-      type: 2, // argon2id
-      memoryCost: 65536,
-      timeCost: 3,
-      parallelism: 4,
-    });
-  } catch (error) {
-    console.error('[Hash Error]', error);
-    throw new Error('Failed to hash password');
-  }
+  // TODO: Implement proper password hashing compatible with Cloudflare Workers
+  // For now, using a simple hash for development
+  const encoder = new TextEncoder();
+  const data = encoder.encode(password + 'salt');
+  const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+  const hashArray = Array.from(new Uint8Array(hashBuffer));
+  return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
 }
 
 /**
- * Compare password with argon2 hash
+ * Compare password using Web Crypto API (placeholder - replace with proper implementation)
  */
-export async function comparePassword(
-  password: string,
-  hash: string
-): Promise<boolean> {
-  try {
-    return await verify(hash, password);
-  } catch (error) {
-    console.error('[Verify Error]', error);
-    return false;
-  }
+export async function comparePassword(password: string, hash: string): Promise<boolean> {
+  // TODO: Implement proper password verification compatible with Cloudflare Workers
+  const hashedPassword = await hashPassword(password);
+  return hashedPassword === hash;
 }
 
 /**

@@ -13,7 +13,7 @@
     "noImplicitReturns": true,
     "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": true,
-    "isolated": true,
+    "isolatedModules": true,
     "moduleResolution": "bundler",
     "jsx": "react-jsx"
   },

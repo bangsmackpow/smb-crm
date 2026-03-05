@@ -1,4 +1,4 @@
-import { Hono } from 'hono';
+import { Hono, type Context, type Next } from 'hono';
 import { cors } from 'hono/cors';
 
 // Import routes
@@ -24,19 +24,19 @@ app.use('*', cors({
 }));
 
 // Auth middleware - validates JWT for protected routes
-const auth = app.use(async (c, next) => {
+const authMiddleware = async (c: Context<{ Bindings: Env; Variables: { user: JWTPayload } }>, next: Next) => {
   const authHeader = c.req.header('Authorization');
   const token = extractToken(authHeader);
 
   if (token) {
-    const payload = verifyToken(token);
+    const payload = await verifyToken(token, c.env);
     if (payload) {
       c.set('user', payload);
     }
   }
 
   await next();
-});
+};
 
 // Health check (no auth required)
 app.get('/health', (c) => {
@@ -56,7 +56,7 @@ app.get('/api/v1/health', (c) => {
 app.route('/api/v1/auth', authRouter);
 
 // Protected routes - require auth below this point
-app.use('/api/v1/*', auth);
+app.use('/api/v1/*', authMiddleware);
 
 // Contact routes (protected)
 app.use('/api/v1/contacts', async (c, next) => {

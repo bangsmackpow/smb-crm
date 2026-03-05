@@ -3,7 +3,7 @@
  * Implements CRUD operations for contacts
  */
 
-import { Hono } from 'hono';
+import { Hono, type Context } from 'hono';
 import type { JWTPayload } from '../lib/auth';
 import type { Contact, APIResponse, PaginatedResponse } from '../types';
 
@@ -18,7 +18,7 @@ const contactRouter = new Hono<{
 }>();
 
 // GET /api/v1/contacts - List contacts for tenant
-contactRouter.get('/', async (c) => {
+contactRouter.get('/', async (c: any) => {
   try {
     const user = c.get('user');
     const page = parseInt(c.query('page') || '1', 10);
@@ -33,7 +33,7 @@ contactRouter.get('/', async (c) => {
       .bind(user.tenantId)
       .first();
 
-    const total = countResult?.count || 0;
+    const total = Number(countResult?.count) || 0;
 
     // Get paginated results
     const results = await db
@@ -47,7 +47,7 @@ contactRouter.get('/', async (c) => {
       .all();
 
     const response: PaginatedResponse<Contact> = {
-      items: results.results || [],
+      items: (results.results || []) as unknown as Contact[],
       total,
       page,
       limit,
@@ -65,7 +65,7 @@ contactRouter.get('/', async (c) => {
 });
 
 // GET /api/v1/contacts/:id - Get single contact
-contactRouter.get('/:id', async (c) => {
+contactRouter.get('/:id', async (c: any) => {
   try {
     const user = c.get('user');
     const contactId = c.param('id');
@@ -96,7 +96,7 @@ contactRouter.get('/:id', async (c) => {
 });
 
 // POST /api/v1/contacts - Create contact
-contactRouter.post('/', async (c) => {
+contactRouter.post('/', async (c: Context<{ Bindings: Env; Variables: { user: JWTPayload } }>) => {
   try {
     const user = c.get('user');
     const body = await c.req.json();
@@ -163,7 +163,7 @@ contactRouter.post('/', async (c) => {
 });
 
 // PUT /api/v1/contacts/:id - Update contact
-contactRouter.put('/:id', async (c) => {
+contactRouter.put('/:id', async (c: any) => {
   try {
     const user = c.get('user');
     const contactId = c.param('id');
@@ -230,7 +230,7 @@ contactRouter.put('/:id', async (c) => {
 });
 
 // DELETE /api/v1/contacts/:id - Delete contact
-contactRouter.delete('/:id', async (c) => {
+contactRouter.delete('/:id', async (c: any) => {
   try {
     const user = c.get('user');
     const contactId = c.param('id');

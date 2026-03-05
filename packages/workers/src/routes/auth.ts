@@ -138,14 +138,14 @@ authRouter.post('/register', async (c) => {
       .run();
 
     // Generate tokens
-    const accessToken = generateAccessToken({
+    const accessToken = await generateAccessToken({
       userId,
       tenantId,
       email,
       role: 'admin',
-    });
+    }, c.env);
 
-    const refreshToken = generateRefreshToken(userId, tenantId);
+    const refreshToken = await generateRefreshToken(userId, tenantId, c.env);
 
     return c.json(
       {
@@ -241,14 +241,14 @@ authRouter.post('/login', async (c) => {
       .first();
 
     // Generate tokens
-    const accessToken = generateAccessToken({
+    const accessToken = await generateAccessToken({
       userId: user.id,
       tenantId: user.tenant_id,
       email: user.email,
       role: user.role,
-    });
+    }, c.env);
 
-    const refreshToken = generateRefreshToken(user.id, user.tenant_id);
+    const refreshToken = await generateRefreshToken(user.id, user.tenant_id, c.env);
 
     // Update last login
     await db
@@ -307,7 +307,7 @@ authRouter.post('/refresh', async (c) => {
       );
     }
 
-    const payload = verifyToken(refreshToken);
+    const payload = await verifyToken(refreshToken, c.env);
 
     if (!payload || payload.type !== 'refresh') {
       return c.json(
@@ -406,7 +406,7 @@ authRouter.get('/me', async (c) => {
       );
     }
 
-    const payload = verifyToken(token);
+    const payload = await verifyToken(token, c.env);
 
     if (!payload) {
       return c.json(
