@@ -1,7 +1,6 @@
 name = "smb-crm-api"
 main = "src/index.ts"
 compatibility_date = "2024-01-01"
-account_id = "e528c886015cce349076fb7db222a88"
 
 [vars]
 ENVIRONMENT = "development"
