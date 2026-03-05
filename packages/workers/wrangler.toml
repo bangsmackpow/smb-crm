@@ -9,7 +9,7 @@ LOG_LEVEL = "info"
 [[d1_databases]]
 binding = "DB"
 database_name = "smb-crm-db"
-database_id = "7d3fbc8e-da03-4c5e-b2e4-0d9f8a8c8c8c"
+database_id = "${CLOUDFLARE_D1_DATABASE_ID}"
 
 [[r2_buckets]]
 binding = "BUCKET"
