@@ -13,7 +13,3 @@ routes = [
 
 [build.commands]
 command = "npm run build --workspace=packages/frontend"
-
-[build.watch_paths]
-- "packages/frontend/src/**/*.ts"
-- "packages/frontend/src/**/*.tsx"
