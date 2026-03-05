@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { api } from './api.ts';
+import { api, Contact } from './api';
 
 export function ContactsPage() {
   const [contacts, setContacts] = useState<Contact[]>([]);
@@ -15,7 +15,7 @@ export function ContactsPage() {
     try {
       setLoading(true);
       const response = await api.getContacts();
-      setContacts(response.data.items);
+      setContacts(response.items);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to load contacts');
     } finally {

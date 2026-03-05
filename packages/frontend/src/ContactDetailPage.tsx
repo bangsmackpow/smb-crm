@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import { api, Contact, Communication } from './api.ts';
+import { api, Contact, Communication } from './api';
 
 export function ContactDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -19,7 +19,7 @@ export function ContactDetailPage() {
   const loadContact = async (contactId: string) => {
     try {
       const response = await api.getContact(contactId);
-      setContact(response.data);
+      setContact(response);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to load contact');
     }
@@ -28,7 +28,7 @@ export function ContactDetailPage() {
   const loadCommunications = async (contactId: string) => {
     try {
       const response = await api.getCommunications({ contactId });
-      setCommunications(response.data.items);
+      setCommunications(response.items);
     } catch (err) {
       console.error('Failed to load communications:', err);
     }
