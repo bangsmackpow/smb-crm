@@ -84,6 +84,8 @@ jobs:
         run: npm ci
 
       - name: Build frontend
+        env:
+          VITE_API_URL: 'https://api.50801.qzz.io'
         run: npm run build --workspace=packages/frontend
 
       - name: Deploy to Cloudflare Pages
