@@ -88,6 +88,38 @@ export interface Activity {
   created_at: number;
 }
 
+export interface Communication {
+  id: string;
+  tenant_id: string;
+  contact_id: string;
+  deal_id?: string;
+  type: 'email' | 'call' | 'sms' | 'meeting' | 'note';
+  direction?: 'inbound' | 'outbound' | 'internal';
+  subject?: string;
+  content: string;
+  metadata?: string; // JSON string
+  status: 'sent' | 'delivered' | 'read' | 'failed' | 'scheduled';
+  scheduled_at?: number;
+  sent_at?: number;
+  created_by_id: string;
+  created_at: number;
+  updated_at: number;
+}
+
+export interface CommunicationTemplate {
+  id: string;
+  tenant_id: string;
+  name: string;
+  type: 'email' | 'sms' | 'call_script';
+  subject?: string;
+  content: string;
+  variables?: string; // JSON array
+  is_default: boolean;
+  created_by_id: string;
+  created_at: number;
+  updated_at: number;
+}
+
 export interface APIResponse<T = any> {
   success: boolean;
   data?: T;

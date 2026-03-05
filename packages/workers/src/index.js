@@ -2,6 +2,7 @@ import { Hono } from 'hono';
 import { cors } from 'hono/cors';
 import authRouter from './routes/auth';
 import contactRouter from './routes/contacts';
+import communicationRouter from './routes/communications';
 import { extractToken, verifyToken } from './lib/auth';
 const app = new Hono();
 app.use(
@@ -43,6 +44,14 @@ app.use('/api/v1/contacts', async (c, next) => {
   await next();
 });
 app.route('/api/v1/contacts', contactRouter);
+app.use('/api/v1/communications', async (c, next) => {
+  const user = c.get('user');
+  if (!user) {
+    return c.json({ success: false, error: 'Not authenticated' }, 401);
+  }
+  await next();
+});
+app.route('/api/v1/communications', communicationRouter);
 app.notFound((c) => {
   return c.json({ success: false, error: 'Not found' }, 404);
 });

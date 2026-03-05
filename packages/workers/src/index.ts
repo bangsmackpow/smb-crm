@@ -4,6 +4,7 @@ import { cors } from 'hono/cors';
 // Import routes
 import authRouter from './routes/auth';
 import contactRouter from './routes/contacts';
+import communicationRouter from './routes/communications';
 import { extractToken, verifyToken } from './lib/auth';
 import type { JWTPayload } from './lib/auth';
 
@@ -73,6 +74,16 @@ app.use('/api/v1/contacts', async (c, next) => {
   await next();
 });
 app.route('/api/v1/contacts', contactRouter);
+
+// Communication routes (protected)
+app.use('/api/v1/communications', async (c, next) => {
+  const user = c.get('user');
+  if (!user) {
+    return c.json({ success: false, error: 'Not authenticated' }, 401);
+  }
+  await next();
+});
+app.route('/api/v1/communications', communicationRouter);
 
 // 404 handler
 app.notFound((c) => {
