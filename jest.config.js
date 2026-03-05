@@ -1,4 +1,4 @@
-export default {
+module.exports = {
   preset: 'ts-jest',
   testEnvironment: 'node',
   roots: ['<rootDir>/packages'],
@@ -21,7 +21,9 @@ export default {
         tsconfig: {
           esModuleInterop: true,
           allowSyntheticDefaultImports: true,
+          jsx: 'react-jsx',
         },
+        diagnostics: false,
       },
     ],
   },
