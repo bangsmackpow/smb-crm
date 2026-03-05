@@ -23,11 +23,14 @@ function getEnvValue(env: any, key: string, defaultValue: string): string {
 /**
  * Generate JWT access token
  */
-export async function generateAccessToken(payload: Omit<JWTPayload, 'iat' | 'exp'>, env?: any): Promise<string> {
+export async function generateAccessToken(
+  payload: Omit<JWTPayload, 'iat' | 'exp'>,
+  env?: any
+): Promise<string> {
   const secretKey = getEnvValue(env, 'JWT_SECRET', JWT_SECRET);
   const secret = new TextEncoder().encode(secretKey);
   const expiry = parseInt(getEnvValue(env, 'JWT_EXPIRY', JWT_EXPIRY.toString()), 10);
-  
+
   return await new SignJWT(payload)
     .setProtectedHeader({ alg: 'HS256' })
     .setIssuedAt()
@@ -38,11 +41,18 @@ export async function generateAccessToken(payload: Omit<JWTPayload, 'iat' | 'exp
 /**
  * Generate JWT refresh token (longer expiry)
  */
-export async function generateRefreshToken(userId: string, tenantId: string, env?: any): Promise<string> {
+export async function generateRefreshToken(
+  userId: string,
+  tenantId: string,
+  env?: any
+): Promise<string> {
   const secretKey = getEnvValue(env, 'JWT_SECRET', JWT_SECRET);
   const secret = new TextEncoder().encode(secretKey);
-  const refreshExpiry = parseInt(getEnvValue(env, 'JWT_REFRESH_EXPIRY', JWT_REFRESH_EXPIRY.toString()), 10);
-  
+  const refreshExpiry = parseInt(
+    getEnvValue(env, 'JWT_REFRESH_EXPIRY', JWT_REFRESH_EXPIRY.toString()),
+    10
+  );
+
   return await new SignJWT({
     userId,
     tenantId,
@@ -74,12 +84,12 @@ export async function verifyToken(token: string, env?: any): Promise<JWTPayload 
  */
 export function extractToken(authHeader: string | null | undefined): string | null {
   if (!authHeader) return null;
-  
+
   const parts = authHeader.split(' ');
   if (parts.length !== 2 || parts[0] !== 'Bearer') {
     return null;
   }
-  
+
   return parts[1];
 }
 
@@ -93,7 +103,7 @@ export async function hashPassword(password: string): Promise<string> {
   const data = encoder.encode(password + 'salt');
   const hashBuffer = await crypto.subtle.digest('SHA-256', data);
   const hashArray = Array.from(new Uint8Array(hashBuffer));
-  return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+  return hashArray.map((b) => b.toString(16).padStart(2, '0')).join('');
 }
 
 /**
@@ -140,4 +150,3 @@ export function isValidEmail(email: string): boolean {
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   return emailRegex.test(email);
 }
-

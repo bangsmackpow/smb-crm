@@ -6,11 +6,7 @@ export class Database {
   /**
    * Execute a query with tenant_id automatically included
    */
-  async query(
-    sql: string,
-    params: any[] = [],
-    tenantId?: string
-  ): Promise<any> {
+  async query(sql: string, params: any[] = [], tenantId?: string): Promise<any> {
     try {
       const stmt = this.db.prepare(sql);
       const result = await stmt.bind(...params).all();
@@ -24,33 +20,33 @@ export class Database {
   /**
    * Get a single row
    */
-  async getOne(
-    sql: string,
-    params: any[] = []
-  ): Promise<any | null> {
-    const result = await this.db.prepare(sql).bind(...params).first();
+  async getOne(sql: string, params: any[] = []): Promise<any | null> {
+    const result = await this.db
+      .prepare(sql)
+      .bind(...params)
+      .first();
     return result || null;
   }
 
   /**
    * Get all rows
    */
-  async getAll(
-    sql: string,
-    params: any[] = []
-  ): Promise<any[]> {
-    const result = await this.db.prepare(sql).bind(...params).all();
+  async getAll(sql: string, params: any[] = []): Promise<any[]> {
+    const result = await this.db
+      .prepare(sql)
+      .bind(...params)
+      .all();
     return result.results || [];
   }
 
   /**
    * Execute a mutation (INSERT, UPDATE, DELETE)
    */
-  async execute(
-    sql: string,
-    params: any[] = []
-  ): Promise<{ changes: number }> {
-    const result = await this.db.prepare(sql).bind(...params).run();
+  async execute(sql: string, params: any[] = []): Promise<{ changes: number }> {
+    const result = await this.db
+      .prepare(sql)
+      .bind(...params)
+      .run();
     return {
       changes: result.meta.changes,
     };
@@ -59,9 +55,7 @@ export class Database {
   /**
    * Start a transaction
    */
-  async transaction<T>(
-    callback: (db: Database) => Promise<T>
-  ): Promise<T> {
+  async transaction<T>(callback: (db: Database) => Promise<T>): Promise<T> {
     try {
       await this.db.exec('BEGIN TRANSACTION');
       const result = await callback(this);
@@ -77,10 +71,7 @@ export class Database {
 /**
  * Helper to build tenant-scoped query
  */
-export function withTenant(
-  sql: string,
-  tenantId: string
-): [string, string] {
+export function withTenant(sql: string, tenantId: string): [string, string] {
   // This adds tenant_id to WHERE clause if not already present
   const hasTenantCheck = sql.toLowerCase().includes('tenant_id');
   if (!hasTenantCheck && sql.includes('WHERE')) {

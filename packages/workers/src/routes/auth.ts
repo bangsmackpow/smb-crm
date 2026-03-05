@@ -138,12 +138,15 @@ authRouter.post('/register', async (c) => {
       .run();
 
     // Generate tokens
-    const accessToken = await generateAccessToken({
-      userId,
-      tenantId,
-      email,
-      role: 'admin',
-    }, c.env);
+    const accessToken = await generateAccessToken(
+      {
+        userId,
+        tenantId,
+        email,
+        role: 'admin',
+      },
+      c.env
+    );
 
     const refreshToken = await generateRefreshToken(userId, tenantId, c.env);
 
@@ -204,12 +207,10 @@ authRouter.post('/login', async (c) => {
     const db = c.env.DB;
 
     // Get user
-    const user = await db
-      .prepare(
-        'SELECT * FROM users WHERE email = ? AND status = ?'
-      )
+    const user = (await db
+      .prepare('SELECT * FROM users WHERE email = ? AND status = ?')
       .bind(email, 'active')
-      .first() as any;
+      .first()) as any;
 
     if (!user) {
       return c.json(
@@ -241,20 +242,20 @@ authRouter.post('/login', async (c) => {
       .first();
 
     // Generate tokens
-    const accessToken = await generateAccessToken({
-      userId: user.id,
-      tenantId: user.tenant_id,
-      email: user.email,
-      role: user.role,
-    }, c.env);
+    const accessToken = await generateAccessToken(
+      {
+        userId: user.id,
+        tenantId: user.tenant_id,
+        email: user.email,
+        role: user.role,
+      },
+      c.env
+    );
 
     const refreshToken = await generateRefreshToken(user.id, user.tenant_id, c.env);
 
     // Update last login
-    await db
-      .prepare('UPDATE users SET last_login_at = ? WHERE id = ?')
-      .bind(now(), user.id)
-      .run();
+    await db.prepare('UPDATE users SET last_login_at = ? WHERE id = ?').bind(now(), user.id).run();
 
     return c.json({
       success: true,
@@ -322,10 +323,10 @@ authRouter.post('/refresh', async (c) => {
     const db = c.env.DB;
 
     // Get updated user info
-    const user = await db
+    const user = (await db
       .prepare('SELECT * FROM users WHERE id = ? AND tenant_id = ?')
       .bind(payload.userId, payload.tenantId)
-      .first() as any;
+      .first()) as any;
 
     if (!user || user.status !== 'active') {
       return c.json(
@@ -420,10 +421,10 @@ authRouter.get('/me', async (c) => {
 
     const db = c.env.DB;
 
-    const user = await db
+    const user = (await db
       .prepare('SELECT * FROM users WHERE id = ? AND tenant_id = ?')
       .bind(payload.userId, payload.tenantId)
-      .first() as any;
+      .first()) as any;
 
     if (!user) {
       return c.json(

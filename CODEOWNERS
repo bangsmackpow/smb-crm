@@ -1,0 +1,26 @@
+# CODEOWNERS file for automatic reviewer assignment
+
+# Global code owners
+* @curtis
+
+# Frontend code owners
+/packages/frontend/  @curtis
+
+# Workers/API code owners
+/packages/workers/  @curtis
+
+# Database and migrations
+/database/  @curtis
+/DATABASE.md  @curtis
+
+# Configuration and CI/CD
+/.github/  @curtis
+/wrangler.toml  @curtis
+/.eslintrc.json  @curtis
+/.prettierrc.json  @curtis
+
+# Documentation
+/README.md  @curtis
+/ROADMAP.md  @curtis
+/ARCHITECTURE.md  @curtis
+/CONTRIBUTING.md  @curtis

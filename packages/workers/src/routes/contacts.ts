@@ -12,7 +12,7 @@ type Env = {
   BUCKET: R2Bucket;
 };
 
-const contactRouter = new Hono<{ 
+const contactRouter = new Hono<{
   Bindings: Env;
   Variables: { user: JWTPayload };
 }>();
@@ -57,10 +57,7 @@ contactRouter.get('/', async (c: any) => {
     return c.json({ success: true, data: response } as APIResponse);
   } catch (error) {
     console.error('[Contact List Error]', error);
-    return c.json(
-      { success: false, error: 'Failed to fetch contacts' },
-      500
-    );
+    return c.json({ success: false, error: 'Failed to fetch contacts' }, 500);
   }
 });
 
@@ -72,26 +69,18 @@ contactRouter.get('/:id', async (c: any) => {
 
     const db = c.env.DB;
     const contact = await db
-      .prepare(
-        'SELECT * FROM contacts WHERE id = ? AND tenant_id = ?'
-      )
+      .prepare('SELECT * FROM contacts WHERE id = ? AND tenant_id = ?')
       .bind(contactId, user.tenantId)
       .first();
 
     if (!contact) {
-      return c.json(
-        { success: false, error: 'Contact not found' },
-        404
-      );
+      return c.json({ success: false, error: 'Contact not found' }, 404);
     }
 
     return c.json({ success: true, data: contact } as APIResponse);
   } catch (error) {
     console.error('[Contact Get Error]', error);
-    return c.json(
-      { success: false, error: 'Failed to fetch contact' },
-      500
-    );
+    return c.json({ success: false, error: 'Failed to fetch contact' }, 500);
   }
 });
 
@@ -101,20 +90,10 @@ contactRouter.post('/', async (c: Context<{ Bindings: Env; Variables: { user: JW
     const user = c.get('user');
     const body = await c.req.json();
 
-    const {
-      first_name,
-      last_name,
-      email,
-      phone,
-      company,
-      job_title,
-    } = body;
+    const { first_name, last_name, email, phone, company, job_title } = body;
 
     if (!first_name || !last_name) {
-      return c.json(
-        { success: false, error: 'First and last name required' },
-        400
-      );
+      return c.json({ success: false, error: 'First and last name required' }, 400);
     }
 
     const db = c.env.DB;
@@ -149,16 +128,10 @@ contactRouter.post('/', async (c: Context<{ Bindings: Env; Variables: { user: JW
       .bind(contactId)
       .first();
 
-    return c.json(
-      { success: true, data: newContact },
-      201
-    ) as any;
+    return c.json({ success: true, data: newContact }, 201) as any;
   } catch (error) {
     console.error('[Contact Create Error]', error);
-    return c.json(
-      { success: false, error: 'Failed to create contact' },
-      500
-    );
+    return c.json({ success: false, error: 'Failed to create contact' }, 500);
   }
 });
 
@@ -173,17 +146,12 @@ contactRouter.put('/:id', async (c: any) => {
 
     // Check ownership
     const existing = await db
-      .prepare(
-        'SELECT * FROM contacts WHERE id = ? AND tenant_id = ?'
-      )
+      .prepare('SELECT * FROM contacts WHERE id = ? AND tenant_id = ?')
       .bind(contactId, user.tenantId)
       .first();
 
     if (!existing) {
-      return c.json(
-        { success: false, error: 'Contact not found' },
-        404
-      );
+      return c.json({ success: false, error: 'Contact not found' }, 404);
     }
 
     const now = Math.floor(Date.now() / 1000);
@@ -214,18 +182,12 @@ contactRouter.put('/:id', async (c: any) => {
       )
       .run();
 
-    const updated = await db
-      .prepare('SELECT * FROM contacts WHERE id = ?')
-      .bind(contactId)
-      .first();
+    const updated = await db.prepare('SELECT * FROM contacts WHERE id = ?').bind(contactId).first();
 
     return c.json({ success: true, data: updated } as APIResponse);
   } catch (error) {
     console.error('[Contact Update Error]', error);
-    return c.json(
-      { success: false, error: 'Failed to update contact' },
-      500
-    );
+    return c.json({ success: false, error: 'Failed to update contact' }, 500);
   }
 });
 
@@ -239,31 +201,20 @@ contactRouter.delete('/:id', async (c: any) => {
 
     // Check ownership
     const existing = await db
-      .prepare(
-        'SELECT * FROM contacts WHERE id = ? AND tenant_id = ?'
-      )
+      .prepare('SELECT * FROM contacts WHERE id = ? AND tenant_id = ?')
       .bind(contactId, user.tenantId)
       .first();
 
     if (!existing) {
-      return c.json(
-        { success: false, error: 'Contact not found' },
-        404
-      );
+      return c.json({ success: false, error: 'Contact not found' }, 404);
     }
 
-    await db
-      .prepare('DELETE FROM contacts WHERE id = ?')
-      .bind(contactId)
-      .run();
+    await db.prepare('DELETE FROM contacts WHERE id = ?').bind(contactId).run();
 
     return c.json({ success: true, message: 'Contact deleted' } as APIResponse);
   } catch (error) {
     console.error('[Contact Delete Error]', error);
-    return c.json(
-      { success: false, error: 'Failed to delete contact' },
-      500
-    );
+    return c.json({ success: false, error: 'Failed to delete contact' }, 500);
   }
 });
 

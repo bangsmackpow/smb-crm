@@ -17,14 +17,20 @@ interface Env {
 const app = new Hono<{ Bindings: Env; Variables: { user: JWTPayload } }>();
 
 // Middleware
-app.use('*', cors({
-  origin: '*',
-  allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowHeaders: ['Content-Type', 'Authorization'],
-}));
+app.use(
+  '*',
+  cors({
+    origin: '*',
+    allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowHeaders: ['Content-Type', 'Authorization'],
+  })
+);
 
 // Auth middleware - validates JWT for protected routes
-const authMiddleware = async (c: Context<{ Bindings: Env; Variables: { user: JWTPayload } }>, next: Next) => {
+const authMiddleware = async (
+  c: Context<{ Bindings: Env; Variables: { user: JWTPayload } }>,
+  next: Next
+) => {
   const authHeader = c.req.header('Authorization');
   const token = extractToken(authHeader);
 
@@ -79,10 +85,7 @@ app.onError((err, c) => {
   return c.json(
     {
       success: false,
-      error:
-        c.env.ENVIRONMENT === 'production'
-          ? 'Internal server error'
-          : err.message,
+      error: c.env.ENVIRONMENT === 'production' ? 'Internal server error' : err.message,
     },
     500
   );

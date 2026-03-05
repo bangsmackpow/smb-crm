@@ -4,10 +4,72 @@ This guide walks you through building features for the SMB CRM.
 
 ## Prerequisites
 
-- Node.js 18+
-- npm
-- Wrangler CLI
+- Node.js 20+
+- npm 11+
+- Wrangler CLI (installed as dev dependency)
 - A Cloudflare account
+
+## Getting Started
+
+### 1. Install Dependencies
+
+```bash
+npm install
+```
+
+This will also set up git hooks for code quality checks.
+
+### 2. Run Development Servers
+
+```bash
+npm run dev
+```
+
+This starts both the frontend (port 5173) and workers API (port 8787) in development mode.
+
+## Code Quality
+
+### Formatting with Prettier
+
+```bash
+# Format all code
+npm run format
+
+# Check formatting without changes
+npm run format:check
+```
+
+Prettier runs automatically on commit via git hooks.
+
+### Type Checking
+
+```bash
+npm run type-check
+```
+
+### Git Hooks
+
+We use Husky and lint-staged to automatically:
+
+- Format code with Prettier on commit
+- Run ESLint on changed files
+- Prevent commits with formatting/linting issues
+
+You can temporarily skip hooks with:
+
+```bash
+git commit --no-verify
+```
+
+### VS Code Setup
+
+Recommended extensions are listed in `.vscode/extensions.json`. VS Code will suggest installing them.
+
+Key settings:
+
+- Auto-format on save
+- ESLint auto-fix on save
+- Prettier as default formatter
 
 ## Project Structure Quick Reference
 
@@ -118,31 +180,28 @@ const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8787';
 
 export const contactService = {
   async list(page = 1, limit = 20): Promise<PaginatedResponse<Contact>> {
-    const response = await fetch(
-      `${API_URL}/api/v1/contacts?page=${page}&limit=${limit}`,
-      {
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
-        },
-      }
-    );
-    
+    const response = await fetch(`${API_URL}/api/v1/contacts?page=${page}&limit=${limit}`, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('token')}`,
+      },
+    });
+
     if (!response.ok) throw new Error('Failed to fetch contacts');
-    
-    const data = await response.json() as APIResponse;
+
+    const data = (await response.json()) as APIResponse;
     return data.data as PaginatedResponse<Contact>;
   },
 
   async getById(id: string): Promise<Contact> {
     const response = await fetch(`${API_URL}/api/v1/contacts/${id}`, {
       headers: {
-        'Authorization': `Bearer ${localStorage.getItem('token')}`,
+        Authorization: `Bearer ${localStorage.getItem('token')}`,
       },
     });
-    
+
     if (!response.ok) throw new Error('Failed to fetch contact');
-    
-    const data = await response.json() as APIResponse;
+
+    const data = (await response.json()) as APIResponse;
     return data.data as Contact;
   },
 
@@ -151,14 +210,14 @@ export const contactService = {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${localStorage.getItem('token')}`,
+        Authorization: `Bearer ${localStorage.getItem('token')}`,
       },
       body: JSON.stringify(contact),
     });
-    
+
     if (!response.ok) throw new Error('Failed to create contact');
-    
-    const data = await response.json() as APIResponse;
+
+    const data = (await response.json()) as APIResponse;
     return data.data as Contact;
   },
 
@@ -167,14 +226,14 @@ export const contactService = {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${localStorage.getItem('token')}`,
+        Authorization: `Bearer ${localStorage.getItem('token')}`,
       },
       body: JSON.stringify(updates),
     });
-    
+
     if (!response.ok) throw new Error('Failed to update contact');
-    
-    const data = await response.json() as APIResponse;
+
+    const data = (await response.json()) as APIResponse;
     return data.data as Contact;
   },
 
@@ -182,10 +241,10 @@ export const contactService = {
     const response = await fetch(`${API_URL}/api/v1/contacts/${id}`, {
       method: 'DELETE',
       headers: {
-        'Authorization': `Bearer ${localStorage.getItem('token')}`,
+        Authorization: `Bearer ${localStorage.getItem('token')}`,
       },
     });
-    
+
     if (!response.ok) throw new Error('Failed to delete contact');
   },
 };
@@ -243,7 +302,7 @@ export function ContactsPage() {
 
   const handleCreate = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    
+
     const formData = new FormData(e.currentTarget);
     const newContact: Partial<Contact> = {
       first_name: formData.get('firstName') as string,
@@ -272,7 +331,7 @@ export function ContactsPage() {
   return (
     <div>
       <h1>Contacts</h1>
-      
+
       <form onSubmit={handleCreate}>
         <input name="firstName" placeholder="First Name" required />
         <input name="lastName" placeholder="Last Name" required />
@@ -333,6 +392,7 @@ export function ContactsPage() {
 ### Add a New Database Table
 
 1. Create migration:
+
    ```bash
    wrangler d1 migrations create smb-crm-db add_new_table
    ```
@@ -362,6 +422,7 @@ export function ContactsPage() {
 Both frontend and workers use the same types from `packages/workers/src/types/index.ts`.
 
 When adding a new type:
+
 1. Add to `packages/workers/src/types/index.ts`
 2. Import in frontend: `import type { MyType } from '../../../workers/src/types'`
 
@@ -438,16 +499,19 @@ const getContact = async (id) => { ... }
 ## Git Workflow
 
 1. Create feature branch:
+
    ```bash
    git checkout -b feature/add-contact-search
    ```
 
 2. Make changes following conventional commits:
+
    ```bash
    git commit -m "feat(contacts): add search functionality"
    ```
 
 3. Push and create PR:
+
    ```bash
    git push origin feature/add-contact-search
    ```
