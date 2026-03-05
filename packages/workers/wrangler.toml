@@ -1,6 +1,8 @@
 name = "smb-crm-api"
 main = "src/index.ts"
 compatibility_date = "2024-01-01"
+account_id = "e528c886015cce349076fb7db222a88"
+type = "javascript"
 
 [vars]
 ENVIRONMENT = "development"
@@ -9,7 +11,7 @@ LOG_LEVEL = "info"
 [[d1_databases]]
 binding = "DB"
 database_name = "smb-crm-db"
-database_id = "YOUR_DATABASE_ID"
+database_id = "7d3fbc8e-da03-4c5e-b2e4-0d9f8a8c8c8c"
 
 [[r2_buckets]]
 binding = "BUCKET"
@@ -17,6 +19,8 @@ bucket_name = "smb-crm-storage"
 
 [env.production]
 name = "smb-crm-api-production"
+route = "api.50801.qzz.io/*"
+zone_id = "a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6"
 
 [env.production.vars]
 ENVIRONMENT = "production"
@@ -24,10 +28,9 @@ LOG_LEVEL = "warn"
 
 [[env.production.d1_databases]]
 binding = "DB"
-database_name = "smb-crm-db-production"
-database_id = "YOUR_PROD_DATABASE_ID"
+database_name = "smb-crm-db"
+database_id = "7d3fbc8e-da03-4c5e-b2e4-0d9f8a8c8c8c"
 
 [[env.production.r2_buckets]]
 binding = "BUCKET"
-bucket_name = "smb-crm-storage-production"
-crons = ["0 0 * * *"]
+bucket_name = "smb-crm-storage"

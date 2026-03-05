@@ -1,22 +1,19 @@
-import { useState } from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { Layout } from './Layout';
+import { ContactsPage } from './ContactsPage';
+import { ContactDetailPage } from './ContactDetailPage';
 
 function App() {
-  const [count, setCount] = useState(0);
-
   return (
-    <>
-      <div>
-        <h1>SMB CRM</h1>
-        <p>A modern CRM for freelancers, SMBs, and non-profits</p>
-      </div>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>count is {count}</button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">Click on the Vite and React logos to learn more</p>
-    </>
+    <Router>
+      <Layout>
+        <Routes>
+          <Route path="/" element={<ContactsPage />} />
+          <Route path="/contacts" element={<ContactsPage />} />
+          <Route path="/contacts/:id" element={<ContactDetailPage />} />
+        </Routes>
+      </Layout>
+    </Router>
   );
 }
 
