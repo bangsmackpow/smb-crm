@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import { api, Contact, Communication } from '../api.ts';
+import { api, Contact, Communication } from './api.ts';
 
 export function ContactDetailPage() {
   const { id } = useParams<{ id: string }>();

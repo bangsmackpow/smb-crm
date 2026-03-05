@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { api } from '../api.ts';
+import { api } from './api.ts';
 
 export function ContactsPage() {
   const [contacts, setContacts] = useState<Contact[]>([]);
