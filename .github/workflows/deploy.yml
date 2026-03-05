@@ -91,9 +91,8 @@ jobs:
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          projectName: smb-crm
-          directory: packages/frontend/dist
-          environment: production
+          command: pages deploy dist --project-name=smb-crm --branch=main
+          workingDirectory: packages/frontend
 
   notify-deployment:
     needs: [deploy-workers, deploy-pages]
